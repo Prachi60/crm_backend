@@ -102,7 +102,7 @@ export const getAllLeads = async (req, res) => {
 export const updateLead = async (req, res) => {
   try {
     let updates = req.body;
-   
+   const userId=req.id;
 
     if (typeof updates.tags === "string") {
       try {
