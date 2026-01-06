@@ -25,9 +25,10 @@ export const registerEmployee = async (req, res) => {
        leadsCount
     } = value;
 
-
+       const userId = req.id;
     const existingEmployee = await Employ.findOne({
        email ,
+          createdBy: userId
      
     });
 
@@ -46,7 +47,8 @@ export const registerEmployee = async (req, res) => {
       phone,
       position,
       status,
-       leadsCount
+       leadsCount,
+           createdBy: userId 
     });
 
     const savedEmployee = await newEmployee.save();
@@ -60,6 +62,7 @@ export const registerEmployee = async (req, res) => {
       phone: savedEmployee.phone,
       position: savedEmployee.position,
       status: savedEmployee.status,
+      createdBy:savedEmployee.createdBy
     });
     } catch (error) {
     console.error("Register Employee Error:", error.message);
@@ -71,7 +74,8 @@ export const registerEmployee = async (req, res) => {
 
 export const getEmployees = async (req, res) => {
   try {
-    const employees = await Employ.find()
+    const userId = req.id;
+    const employees = await Employ.find({createdBy:userId})
       .sort({ createdAt: -1 });
 
     return handleResponse(
@@ -92,6 +96,7 @@ export const getEmployees = async (req, res) => {
 export const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.id;
 
     const { error, value } = updateEmployeeValidator.validate(req.body, {
       abortEarly: false,
@@ -104,23 +109,24 @@ export const updateEmployee = async (req, res) => {
     }
 
 
-    const employee = await Employ.findById(id);
+    // const employee = await Employ.findById(id);
+     const employee = await Employ.findOne({ _id: id, createdBy: userId });
 
     if (!employee) {
       return handleResponse(res, 404, "Employee not found");
     }
 
     
-    if (value.email && value.email !== employee.email) {
-      const emailExists = await Employ.findOne({ email: value.email });
-      if (emailExists) {
-        return handleResponse(
-          res,
-          409,
-          "Another employee already exists with this email"
-        );
-      }
-    }
+    // if (value.email && value.email !== employee.email) {
+    //   const emailExists = await Employ.findOne({ email: value.email });
+    //   if (emailExists) {
+    //     return handleResponse(
+    //       res,
+    //       409,
+    //       "Another employee already exists with this email"
+    //     );
+    //   }
+    // }
 
     
     const updatedEmployee = await Employ.findByIdAndUpdate(
@@ -137,6 +143,7 @@ export const updateEmployee = async (req, res) => {
       position: updatedEmployee.position,
       status: updatedEmployee.status,
       leadsCount: updatedEmployee.leadsCount,
+      createdBy:updatedEmployee.createdBy
     });
 
   } catch (error) {
@@ -149,9 +156,10 @@ export const updateEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-
+    const userId = req.id;
    
-    const employee = await Employ.findById(id);
+    // const employee = await Employ.findById(id);
+     const employee = await Employ.findOne({ _id: id, createdBy: userId });
 
     if (!employee) {
       return handleResponse(res, 404, "Employee not found");

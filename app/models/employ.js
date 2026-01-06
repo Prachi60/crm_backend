@@ -39,6 +39,11 @@ const employeeSchema = new mongoose.Schema(
       enum: ["Active", "Inactive"],
       default: "Active"
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    }
 
    
   },

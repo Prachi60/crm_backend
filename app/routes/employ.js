@@ -5,7 +5,7 @@ import authMiddleware from "../middleWare/authMiddleware.js";
 const router = express.Router();
  
 router.post("/registeremploy",authMiddleware,registerEmployee);
-router.get("/getemploy",getEmployees);
+router.get("/getemploy",authMiddleware,getEmployees);
 router.patch("/updateemploy/:id",authMiddleware,updateEmployee);
 router.delete("/deleteemploy/:id",authMiddleware,deleteEmployee);
 

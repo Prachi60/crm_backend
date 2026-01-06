@@ -36,9 +36,9 @@ export const createLead = async (req, res) => {
         );
       }
     }
-
+ const userId = req.id;
     
-    const existingLead = await Lead.findOne({ email });
+    const existingLead = await Lead.findOne({ email,createdBy: userId });
     if (existingLead) {
       return handleResponse(
         res,
@@ -56,7 +56,8 @@ export const createLead = async (req, res) => {
       tags,
       status,
       employee,
-      Image: fileUrls
+      Image: fileUrls,
+      createdBy: userId
 
     });
   
@@ -86,7 +87,8 @@ export const createLead = async (req, res) => {
 
 export const getAllLeads = async (req, res) => {
   try {
-    const leads = await Lead.find()
+       const userId = req.id;
+    const leads = await Lead.find({createdBy: userId })
       .populate("employee", "companyName email")
       .sort({ createdAt: -1 });
 
@@ -116,8 +118,9 @@ export const updateLead = async (req, res) => {
       updates.Image = req.fileUrl;
     }
 
-    const lead = await Lead.findByIdAndUpdate(
-      req.params.id,
+    const lead = await Lead.findByIdAndUpdate({
+    _id:  req.params.id,
+       createdBy: userId},
       updates,
       { new: true, runValidators: true }
     );
@@ -138,7 +141,9 @@ export const updateLead = async (req, res) => {
  
 export const deleteLead = async (req, res) => {
   try {
-    const lead = await Lead.findByIdAndDelete(req.params.id);
+     const userId = req.id;
+    const lead = await Lead.findByIdAndDelete({_id: req.params.id,
+      createdBy: userId});
 
     if (!lead) {
       return handleResponse(res, 404, "Lead not found");

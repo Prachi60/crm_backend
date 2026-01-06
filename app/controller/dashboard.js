@@ -4,8 +4,9 @@ import handleResponse from "../utils/handleResponse.js";
 
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalLeads = await Lead.countDocuments();
-    const totalEmployees = await Employee.countDocuments();
+     const userId = req.id;
+    const totalLeads = await Lead.countDocuments({createdBy: userId});
+    const totalEmployees = await Employee.countDocuments({createdBy: userId});
 
     const data = {
       totalLeads,
